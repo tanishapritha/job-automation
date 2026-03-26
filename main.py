@@ -11,6 +11,7 @@ from fastapi import FastAPI
 
 from database import Base, engine
 from routers import jobs, mail
+from routers.jobs import user_router
 from scheduler import start_scheduler, stop_scheduler
 
 
@@ -37,6 +38,7 @@ app = FastAPI(
 )
 
 # ── Mount routers ────────────────────────────────────────────────────────────
+app.include_router(user_router)
 app.include_router(jobs.router)
 app.include_router(mail.router)
 
