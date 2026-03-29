@@ -1,5 +1,5 @@
-from pydantic import BaseModel, HttpUrl, EmailStr
-from typing import List, Optional
+from pydantic import BaseModel, HttpUrl, EmailStr, Field
+from typing import List, Optional, Any
 from datetime import datetime
 
 # --- User ---
@@ -24,13 +24,32 @@ class UserResponse(UserBase):
         from_attributes = True
 
 # --- Job ---
+class PlatformData(BaseModel):
+    job_level:           Optional[str] = None
+    skills:              Optional[Any] = None
+    experience_range:    Optional[str] = None
+    company_rating:      Optional[Any] = None
+    company_reviews:     Optional[Any] = None
+    vacancy_count:       Optional[Any] = None
+    work_from_home_type: Optional[str] = None
+    company_industry:    Optional[str] = None
+    company_revenue:     Optional[str] = None
+    company_employees:   Optional[str] = None
+    company_logo:        Optional[str] = None
+
 class JobBase(BaseModel):
-    title: str
-    company: str
-    location: str
-    description: str
+    title: str = "Untitled"
+    company: str = "Unknown"
+    location: str = "Remote"
+    description: Optional[str] = ""
     apply_url: str
-    source: str
+    source: str = "Scraper"
+    platform:      Optional[str] = None
+    salary:        Optional[str] = None
+    is_remote:     Optional[bool] = False
+    date_posted:   Optional[str] = None
+    company_url:   Optional[str] = None
+    platform_data: Optional[PlatformData] = None
 
 class JobResponse(JobBase):
     id: int
@@ -63,5 +82,11 @@ class MailHistoryResponse(BaseModel):
 # --- Search ---
 class JobSearchRequest(BaseModel):
     query: str
-    location: str
+    location: str = ""
     results: int = 10
+    experience_level: str = "mid"
+    job_type: str = "full_time"
+    remote_preference: str = "hybrid"
+    hours_old: int = 168
+    country_indeed: str = "India"
+    salary_min: Optional[int] = None

@@ -1,47 +1,42 @@
-"""
-Job Search & Mail Automation API
-─────────────────────────────────
-FastAPI application entry-point.
-Mounts routers, creates DB tables, and starts the APScheduler.
-"""
-
+import os
 from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from database import Base, engine
 from routers import jobs, mail
-from routers.jobs import user_router
 from scheduler import start_scheduler, stop_scheduler
 
+# Create tables
+Base.metadata.create_all(bind=engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup / shutdown lifecycle hook."""
-    # Create all tables on startup
-    Base.metadata.create_all(bind=engine)
-    # Start the background scheduler
+    # Startup: Start Scheduler
     start_scheduler()
     yield
-    # Shutdown
+    # Shutdown: Stop Scheduler
     stop_scheduler()
 
+app = FastAPI(title="Job Automation API", lifespan=lifespan)
 
-app = FastAPI(
-    title="Job Search & Mail Automation API",
-    description=(
-        "Automated job search via Adzuna, AI-powered cover-letter "
-        "generation with Groq LLM, and Gmail delivery — all on autopilot."
-    ),
-    version="0.1.0",
-    lifespan=lifespan,
+# ── CORS Middleware (Must be FIRST) ─────────────────────────────────────────
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# ── Mount routers ────────────────────────────────────────────────────────────
-app.include_router(user_router)
+# ── Include Routers ────────────────────────────────────────────────────────
+app.include_router(jobs.user_router)
 app.include_router(jobs.router)
 app.include_router(mail.router)
 
+# ── Mount static files ──────────────────────────────────────────────────────
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 @app.get("/", tags=["Health"])
 async def root():
