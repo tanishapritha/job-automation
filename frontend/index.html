@@ -3,79 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Job Lab | AI Hunt</title>
+    <title>Job Automation Dash</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <header class="title-header">
-        <h1>Global Job Lab</h1>
-        <p style="color: var(--text-muted);">Harnessing AI to hunt across LinkedIn, Indeed, and Naukri in real-time.</p>
-    </header>
-
-    <main class="lab-container">
-        <!-- Control Panel -->
-        <aside class="controls-card">
-            <div class="section-title"><i class="fas fa-filter"></i> Search Filters</div>
-            
-            <div class="input-group">
-                <label>Domains (use ; to separate)</label>
-                <input type="text" id="domains" placeholder="Web Development; AI; Machine Learning" value="Web Development; Frontend">
-            </div>
-
-            <div class="input-group">
-                <label>Preferred Locations (Max 3)</label>
-                <input type="text" id="loc1" placeholder="Location 1" value="Bangalore, India" style="margin-bottom: 0.5rem;">
-                <input type="text" id="loc2" placeholder="Location 2" value="London, UK" style="margin-bottom: 0.5rem;">
-                <input type="text" id="loc3" placeholder="Location 3" value="Remote">
-            </div>
-
-            <div class="input-group">
-                <label class="switch-ui" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                    <input type="checkbox" id="remoteCheck" checked style="width: auto;">
-                    <span style="font-size: 0.85rem;">Include Remote Jobs</span>
-                </label>
-            </div>
-
-            <div class="input-group">
-                <label>Experience Level</label>
-                <div class="exp-selector" id="expSelector">
-                    <button class="exp-btn" data-level="beginner">Beginner</button>
-                    <button class="exp-btn active" data-level="mid">Mid</button>
-                    <button class="exp-btn" data-level="senior">Senior</button>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Min Salary (₹ / Year)</label>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                   <input type="range" id="salaryRange" min="0" max="100" step="5" value="10" style="padding: 0;">
-                   <span id="salaryDisplay" style="font-weight: 700; color: var(--accent-primary);">₹10L</span>
-                </div>
-            </div>
-
-            <button class="btn-search" id="searchBtn">
-                <i class="fas fa-search"></i> Launch Hunt
+    <div class="container">
+        <header>
+            <div class="brand">Job Automation</div>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon" id="themeIcon"></i>
+                <span id="themeText">Dark Mode</span>
             </button>
-        </aside>
+        </header>
 
-        <!-- Live Feed -->
-        <section>
-            <div class="section-title"><i class="fas fa-stream"></i> Real-time Job Feed</div>
-            <div id="loader" style="display: none; text-align: center; padding: 2rem;">
-                <span class="loader"></span>
-                <p style="margin-top: 1rem; color: var(--text-muted);">Scraping LinkedIn, Indeed, and Naukri...</p>
-            </div>
-            <div class="results-grid" id="resultsGrid">
-                <!-- Cards injected here -->
-                <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 5rem;">
-                    <i class="fas fa-search-location" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
-                    <p>Enter your preferences and launch the hunt.</p>
+        <main class="dashboard">
+            <!-- Parameters Panel -->
+            <aside class="sidebar">
+                <div class="card">
+                    <div class="section-title"><i class="fas fa-sliders"></i> Parameters</div>
+                    
+                    <div class="field">
+                        <label>Domains</label>
+                        <input type="text" id="domains" value="Web Development; AI">
+                    </div>
+
+                    <div class="field">
+                        <label>Target Locations</label>
+                        <input type="text" id="loc1" placeholder="City 1" value="London, UK">
+                        <input type="text" id="loc2" placeholder="City 2" value="Remote">
+                    </div>
+
+                    <div class="field">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="remoteFilter" checked style="width: auto;">
+                            Include Remote
+                        </label>
+                    </div>
+
+                    <div class="field">
+                        <label>Experience</label>
+                        <select id="expLevel">
+                            <option value="beginner">Beginner</option>
+                            <option value="mid" selected>Mid Level</option>
+                            <option value="senior">Senior</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Floor Salary (₹/Y)</label>
+                        <input type="number" id="minSalary" step="100000" value="1000000">
+                    </div>
+
+                    <button class="btn-search" id="startSearch">
+                        Launch Hunt
+                    </button>
                 </div>
-            </div>
-        </section>
-    </main>
+            </aside>
+
+            <!-- Results Stream -->
+            <section>
+                <div class="section-title" id="feedTitle" style="display: flex; justify-content: space-between;">
+                    <span><i class="fas fa-bolt"></i> Live Feed</span>
+                    <div id="loading" style="display: none;"><div class="spinner"></div></div>
+                </div>
+
+                <div class="job-feed" id="jobFeed">
+                    <!-- Cards populated here -->
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 5rem;">
+                         <i class="fas fa-search-plus" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                         <p>Define your hunt parameters and start.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
 
     <script src="app.js"></script>
 </body>

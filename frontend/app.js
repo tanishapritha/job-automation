@@ -1,51 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const searchBtn = document.getElementById('searchBtn');
-    const resultsGrid = document.getElementById('resultsGrid');
-    const loader = document.getElementById('loader');
-    const salaryRange = document.getElementById('salaryRange');
-    const salaryDisplay = document.getElementById('salaryDisplay');
-    const expButtons = document.querySelectorAll('.exp-btn');
-    
-    let selectedExperience = 'mid';
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeText = document.getElementById('themeText');
+    const startSearch = document.getElementById('startSearch');
+    const jobFeed = document.getElementById('jobFeed');
+    const loading = document.getElementById('loading');
 
-    // UI: Salary Display Update
-    salaryRange.addEventListener('input', (e) => {
-        salaryDisplay.innerText = `₹${e.target.value}L`;
+    // ── Theme Engine (Light Default) ──────────────────────────────────────────
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        
+        themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        themeText.innerText = isDark ? 'Light Mode' : 'Dark Mode';
     });
 
-    // UI: Experience Toggles
-    expButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            expButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            selectedExperience = btn.dataset.level;
-        });
-    });
-
-    // --- Search Execution ---
-    searchBtn.addEventListener('click', async () => {
+    // ── Search Logic ──────────────────────────────────────────────────────────
+    startSearch.addEventListener('click', async () => {
         const domains = document.getElementById('domains').value;
-        const locations = [
-            document.getElementById('loc1').value,
-            document.getElementById('loc2').value,
-            document.getElementById('loc3').value
-        ].filter(l => l.trim() !== "").join(", ");
+        const loc1 = document.getElementById('loc1').value;
+        const loc2 = document.getElementById('loc2').value;
+        const remoteOnly = document.getElementById('remoteFilter').checked;
+        const expLevel = document.getElementById('expLevel').value;
+        const salary = document.getElementById('minSalary').value;
 
-        const isRemote = document.getElementById('remoteCheck').checked;
-        const minSalary = parseInt(salaryRange.value) * 100000; // Convert L to actual
-
-        // UI Reset
-        resultsGrid.innerHTML = '';
-        loader.style.display = 'block';
+        // Visual Feedback
+        jobFeed.innerHTML = '';
+        loading.style.display = 'block';
 
         const payload = {
             query: domains.split(';').join(', '),
-            location: locations,
-            results: 15,
-            experience_level: selectedExperience,
-            job_type: "full_time",
-            remote_preference: isRemote ? "remote" : "onsite",
-            salary_min: minSalary
+            location: `${loc1}, ${loc2}`,
+            results: 10,
+            experience_level: expLevel,
+            remote_preference: remoteOnly ? "remote" : "onsite",
+            salary_min: parseInt(salary)
         };
 
         try {
@@ -55,21 +44,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(payload)
             });
 
-            if (!response.ok) throw new Error('Search failed');
+            if (!response.ok) throw new Error('Backend unavailable');
 
             const jobs = await response.json();
             renderJobs(jobs);
         } catch (error) {
-            console.error(error);
-            resultsGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--danger);">Error connecting to API. Ensure FastAPI is running.</p>`;
+            jobFeed.innerHTML = `<p style="grid-column: 1/-1; color: #ef4444; text-align: center;">Connection Failure. Ensure FastAPI is active on :8000.</p>`;
         } finally {
-            loader.style.display = 'none';
+            loading.style.display = 'none';
         }
     });
 
     function renderJobs(jobs) {
         if (jobs.length === 0) {
-            resultsGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No jobs found in the last 48 hours. Try broadening your domain list.</p>`;
+            jobFeed.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">No matching vacancies found today.</p>`;
             return;
         }
 
@@ -77,24 +65,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'job-card';
             
-            const platformClass = job.source.toLowerCase();
-            const platformName = job.source.charAt(0).toUpperCase() + job.source.slice(1);
+            const pClass = job.source.toLowerCase();
+            const pName = job.source.charAt(0).toUpperCase() + job.source.slice(1);
 
             card.innerHTML = `
-                <div class="platform-badge ${platformClass}">${platformName}</div>
-                <div class="job-title">${job.title}</div>
-                <div class="company-name">${job.company}</div>
+                <div class="source-badge ${pClass}">
+                    <i class="fas fa-rss"></i> ${pName}
+                </div>
+                <h3 class="job-title">${job.title}</h3>
+                <div class="job-company"><i class="fas fa-building"></i> ${job.company}</div>
                 
-                <div class="job-meta">
-                    <span><i class="fas fa-map-marker-alt"></i> ${job.location}</span>
-                    ${job.salary ? `<span><i class="fas fa-coins"></i> ${job.salary}</span>` : ''}
+                <div class="job-details">
+                    <div><i class="fas fa-location-dot"></i> ${job.location}</div>
+                    ${job.salary ? `<div><i class="fas fa-credit-card"></i> ${job.salary}</div>` : ''}
+                    <div><i class="fas fa-calendar-day"></i> Last 48 hrs</div>
                 </div>
 
-                <a href="${job.apply_url}" target="_blank" class="apply-btn">View Opportunity</a>
+                <a href="${job.apply_url}" target="_blank" class="apply-link">
+                    Open Position
+                </a>
             `;
-            resultsGrid.appendChild(card);
+            jobFeed.appendChild(card);
         });
     }
 
-    console.log("Global Job Lab Initialized 🚀");
+    console.log("Classic Minimalist Dashboard Active 🚀");
 });
