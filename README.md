@@ -1,8 +1,8 @@
-# Job Search & Mail Automation API 🚀
+# Job Search & Mail Automation API
 
 Automated job search via Adzuna, AI-powered cover-letter generation with Groq LLM (Llama 3), and Gmail delivery — all on autopilot.
 
-## ✨ Features
+## Features
 
 - **Daily Automation**: Runs a pipeline at 08:00 AM every day.
 - **AI-Powered**: Generates personalized emails based on your unique skills and the job description.
@@ -11,7 +11,7 @@ Automated job search via Adzuna, AI-powered cover-letter generation with Groq LL
 
 ---
 
-## 🛠 Setup Instructions
+## Setup Instructions
 
 ### 1. Clone & Install
 ```bash
@@ -36,7 +36,7 @@ Visit **http://localhost:8000/docs** for interactive documentation.
 
 ---
 
-## 🛰 API Reference
+## API Reference
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
@@ -48,7 +48,7 @@ Visit **http://localhost:8000/docs** for interactive documentation.
 
 ---
 
-## 🤖 How the Automation Works
+## How the Automation Works
 
 The `APScheduler` runs `daily_pipeline()` every morning:
 1.  **Fetch**: Queries jobs for every user based on their `target_role`.
@@ -58,7 +58,7 @@ The `APScheduler` runs `daily_pipeline()` every morning:
 
 ---
 
-## 📈 Free Tier Limits (Approx.)
+## Free Tier Limits (Approx.)
 
 | Service | Limit |
 | :--- | :--- |
@@ -69,7 +69,7 @@ The `APScheduler` runs `daily_pipeline()` every morning:
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
 This repo is **Render-ready**.
 1. Connect your GitHub to Render.com.
